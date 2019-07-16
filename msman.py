@@ -21,6 +21,7 @@ def FormatD(description,tabsize,termsize=columns):
     lines = []
     line = []
     tabsize = " " * tabsize
+    Tab = False
     descriptionarr = description.split(" ")
 
     for index in descriptionarr:
@@ -31,14 +32,14 @@ def FormatD(description,tabsize,termsize=columns):
     if lines == []:
         print(" ".join(line))
     else:    
-        Tab = False
         for index in lines:
             if Tab:
                 print(tabsize + index)
             else:
                 print(index)
             Tab = True    
-
+    if not line == [] and Tab == True:
+        print(tabsize + " ".join(line))
 
 def GetFunc(FunctionNames,database,rlen):
     r = 1

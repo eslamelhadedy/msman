@@ -1,8 +1,10 @@
 import json
 from sys import argv
+import os
 
 db = open("db.json").read()
 loadedDB = json.loads(db)
+rows, columns = os.popen('stty size', 'r').read().split()
 
 class More(object):
     def __init__(self, num_lines):
@@ -15,46 +17,52 @@ class More(object):
 
 more = More(num_lines=40)  
 
+def FormatD(description,tabsize,termsize=columns):
+    lines = []
+    line = []
+    tabsize = " " * tabsize
+    descriptionarr = description.split(" ")
+
+    for index in descriptionarr:
+        line.append(index)
+        if len(" ".join(line)) >= (int(termsize) - 30):
+            lines.append(" ".join(line))
+            line = []
+    if lines == []:
+        print(" ".join(line))
+    else:    
+        Tab = False
+        for index in lines:
+            if Tab:
+                print(tabsize + index)
+            else:
+                print(index)
+            Tab = True    
+
+
 def GetFunc(FunctionNames,database,rlen):
     r = 1
     for function in FunctionNames:
         for i in database['functions']['function']:                                                                                                                          
-            if function in i['name']:                                                                                                                     
+            if function == i['name']:                                                                                                                     
                 print('\033[1;37;40mName:\033[00m '  + i['name'])                                                                                                                           
                 print('\n\033[1;37;40mDLL:\033[00m ' + i['dll'])                                                                                                                            
                 print('\n\033[1;37;40mDescription:\033[00m ',end="")
-                if len(i['description']) > 110:
-                   si = i['description'].split(" ")
-                   li = int(len(si) / 2)
-                   si[li] = si[li] + "\n            "
-                   print(" ".join(si))
-                else:
-                    print(i['description'])
+                FormatD(i['description'],0)
 
                 print('\n\033[1;37;40mArguments:\033[00m     ')                                                                                                                             
                 argz = i['arguments']['argument']                                                                                                                      
                 if 'dict' in str(type(argz)):                                                                                                                          
                     print('\n   \033[1;37;40mName:\033[00m ' + argz['name'])                                                                                                                
                     print('   \033[1;37;40mDescription:\033[00m ', end="")
-                    if len(argz['description']) > 110:
-                        si = argz['description'].split(" ")
-                        li = int(len(si) / 2)
-                        si[li] = si[li] + "\n               "
-                        print(" ".join(si))
-                    else:
-                        print(argz['description'])                                                                                                   
+                    FormatD(argz['description'],9)                                                                                                 
                 elif 'list' in str(type(argz)): 
                     for arg in argz: 
                         print('\n   \033[1;37;40mName:\033[00m ' + arg['name']) 
                         print('   \033[1;37;40mDescription:\033[00m ',end="") 
-                        if len(arg['description']) > 110:
-                            si = arg['description'].split(" ")
-                            li = int(len(si) / 2)
-                            si[li] = si[li] + "\n               "
-                            print(" ".join(si))
-                        else:
-                            print(arg['description'])           
-                print('\n' + i['returns'],end="")         
+                        FormatD(arg['description'],16)          
+                print("")
+                FormatD(i['returns'],0)
                 break 
         if not r == rlen:        
             print("\n\n")

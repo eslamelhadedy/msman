@@ -2,7 +2,8 @@ import json
 from sys import argv
 import os
 
-db = open("db.json").read()
+data_dir = os.path.dirname(__file__)
+db = open(os.path.join(data_dir, "db.json")).read()
 loadedDB = json.loads(db)
 rows, columns = os.popen('stty size', 'r').read().split()
 
